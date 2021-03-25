@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 const val habitKey: String = "data"
@@ -17,17 +16,19 @@ const val indexKey: String = "index"
 const val addRequestCode = 1
 const val changeRequestCode = 2
 
-class CustomAdapter (
+class CustomAdapter(
     private val habits: List<Habit>,
     private val onClick: (Habit, Int) -> Unit
-): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
-    class ViewHolder(containerView: View, val onClick: (Habit, Int) -> Unit): RecyclerView.ViewHolder(containerView) {
+    class ViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView) {
         private var currentHabit: Habit? = null
         private val habitName = itemView.findViewById<TextView>(R.id.habit_name);
-        private val habitDescription = itemView.findViewById<TextView>(R.id.habit_description_value);
+        private val habitDescription =
+            itemView.findViewById<TextView>(R.id.habit_description_value);
         private val habitPriority = itemView.findViewById<TextView>(R.id.habit_priority_value);
-        private val habitPeriodicity = itemView.findViewById<TextView>(R.id.habit_periodicity_value);
+        private val habitPeriodicity =
+            itemView.findViewById<TextView>(R.id.habit_periodicity_value);
         private val habitType = itemView.findViewById<TextView>(R.id.habit_type_value);
         private val habitColor = itemView.findViewById<TextView>(R.id.habit_color);
 
@@ -55,14 +56,13 @@ class CustomAdapter (
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(R.layout.habit_desc, parent, false), onClick)
+        return ViewHolder(inflater.inflate(R.layout.habit_desc, parent, false))
     }
 }
 
 class ListActivity : AppCompatActivity() {
-    var habits: MutableList<Habit> = emptyList<Habit>().toMutableList()
-    var newHabit: Habit? = null
-    lateinit var recyclerView: RecyclerView
+    private var habits: MutableList<Habit> = emptyList<Habit>().toMutableList()
+    private lateinit var recyclerView: RecyclerView
     val onCLick: (Habit, Int) -> Unit = { habit: Habit, ind: Int ->
         val intent = Intent(applicationContext, AddActivity::class.java).apply {
             putExtra(habitKey, habit)
@@ -74,15 +74,18 @@ class ListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        newHabit = intent.getParcelableExtra(habitKey)
         recyclerView = findViewById(R.id.recycle_view)
-        habits.add(Habit(
-        "Пример",
-        "ААААААА",
-        3,
-        "каждый день",
-        HabitType.NEUTRAL,
-        R.color.green))
+        habits.add(
+            Habit(
+                "Пример",
+                "ААААААА",
+                3,
+                "каждый день",
+                "по пять раз",
+                HabitType.NEUTRAL,
+                R.color.green
+            )
+        )
         recyclerView.adapter = CustomAdapter(habits, onCLick)
 
         findViewById<Button>(R.id.add_button).setOnClickListener {
@@ -99,15 +102,12 @@ class ListActivity : AppCompatActivity() {
         if (data == null)
             return
         if (requestCode == addRequestCode) {
-            newHabit = data.getParcelableExtra(habitKey)
+            val newHabit = data.getParcelableExtra<Habit>(habitKey)
             if (newHabit != null) {
-                habits.add(newHabit!!)
-                recyclerView.adapter = CustomAdapter(habits, onCLick)
-                recyclerView.invalidate()
-                recyclerView.requestLayout()
+                habits.add(newHabit)
+                recyclerView.adapter!!.notifyItemInserted(habits.size)
             }
-        }
-        else {
+        } else {
             val habit = data.getParcelableExtra<Habit>(habitKey)!!
             val index = data.getIntExtra(indexKey, -1)
             habits[index] = habit
@@ -119,22 +119,10 @@ class ListActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         val hab = savedInstanceState.getParcelableArrayList<Habit>(habitKey)
         habits = hab ?: emptyList<Habit>().toMutableList()
-        if (newHabit != null)
-            habits.add(newHabit!!)
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        outState.putParcelableArrayList(habitKey, ArrayList<Habit> (habits))
-    }
-}
-
-object HabitDiffCallback : DiffUtil.ItemCallback<Habit>() {
-    override fun areItemsTheSame(oldItem: Habit, newItem: Habit): Boolean {
-        return oldItem == newItem
-    }
-
-    override fun areContentsTheSame(oldItem: Habit, newItem: Habit): Boolean {
-        return oldItem.name == newItem.name
+        outState.putParcelableArrayList(habitKey, ArrayList<Habit>(habits))
     }
 }

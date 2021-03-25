@@ -21,6 +21,7 @@ class AddActivity : Activity(), AdapterView.OnItemSelectedListener {
         val desc = findViewById<EditText>(R.id.add_description_input)
         val type = findViewById<RadioGroup>(R.id.choose_type)
         val periodicity = findViewById<EditText>(R.id.add_periodicity_time)
+        val count = findViewById<EditText>(R.id.add_periodicity_count)
         val spinner = findViewById<Spinner>(R.id.choose_priority)
         name.setText(habit.name)
         desc.setText(habit.description)
@@ -32,6 +33,7 @@ class AddActivity : Activity(), AdapterView.OnItemSelectedListener {
             }
         )
         periodicity.setText(habit.period)
+        count.setText(habit.count)
         spinner.setSelection(habit.priority - 1)
     }
 
@@ -67,6 +69,7 @@ class AddActivity : Activity(), AdapterView.OnItemSelectedListener {
             val desc = findViewById<EditText>(R.id.add_description_input)
             val type = findViewById<RadioGroup>(R.id.choose_type).checkedRadioButtonId
             val periodicity = findViewById<EditText>(R.id.add_periodicity_time)
+            val count = findViewById<EditText>(R.id.add_periodicity_count)
             if (name.text.toString() == ""
                 || type == -1
                 || periodicity.text.toString() == ""
@@ -93,6 +96,7 @@ class AddActivity : Activity(), AdapterView.OnItemSelectedListener {
                 desc.text.toString(),
                 priority,
                 periodicity.text.toString(),
+                count.text.toString(),
                 typeValue,
                 color
             )

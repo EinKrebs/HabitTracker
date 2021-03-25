@@ -12,6 +12,7 @@ class Habit(
     val description: String,
     val priority: Int,
     val period: String,
+    val count: String,
     val type: HabitType,
     val color: Int
 ) : Parcelable {
@@ -19,6 +20,7 @@ class Habit(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt(),
+        parcel.readString()!!,
         parcel.readString()!!,
         HabitType.valueOf(parcel.readString()!!.toUpperCase()),
         parcel.readInt()
@@ -29,7 +31,8 @@ class Habit(
         parcel.writeString(description)
         parcel.writeInt(priority)
         parcel.writeString(period)
-        parcel.writeString(type.value);
+        parcel.writeString(count)
+        parcel.writeString(type.value)
         parcel.writeInt(color)
     }
 
