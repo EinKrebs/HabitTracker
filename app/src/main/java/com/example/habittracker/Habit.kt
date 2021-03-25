@@ -13,13 +13,14 @@ class Habit(
     val priority: Int,
     val period: String,
     val type: HabitType,
-    val color: Int) : Parcelable {
+    val color: Int
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt(),
         parcel.readString()!!,
-        HabitType.valueOf(parcel.readString()!!),
+        HabitType.valueOf(parcel.readString()!!.toUpperCase()),
         parcel.readInt()
     )
 

@@ -34,7 +34,7 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Название привычки"
+        android:hint="Название привычки"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
@@ -47,38 +47,11 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Описание привычки"
+        android:hint="Описание привычки"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/add_name_input" />
-
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/add_priority"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="@+id/guideline2"-->
-    <!--        app:layout_constraintTop_toBottomOf="parent">-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/add_priority_title"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Приоритет привычки"-->
-    <!--            android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
-    <!--            android:textColor="#000000"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintStart_toStartOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--        <Spinner-->
-    <!--            android:id="@+id/add_priority_spinner"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content" />-->
-
-    <!--    </LinearLayout>-->
 
     <TextView
         android:id="@+id/choose_priority_title"
@@ -94,6 +67,9 @@
         android:id="@+id/choose_priority"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:entries="@array/priorities"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/choose_priority_title" />
@@ -115,7 +91,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Периодичность"
+            android:hint="Периодичность"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <EditText
@@ -125,7 +101,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Число выполнений"
+            android:hint="Число выполнений"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </LinearLayout>
 
@@ -171,7 +147,7 @@
         android:id="@+id/wrong_habit_msg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Заполните все поля!"
+        android:text="Поля кроме описания должны быть заполнены!"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#B3FF0000"
         android:visibility="invisible"

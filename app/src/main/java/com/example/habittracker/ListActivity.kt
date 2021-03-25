@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +12,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
-const val key: String = "data"
+const val habitKey: String = "data"
+const val indexKey: String = "index"
+const val addRequestCode = 1
+const val changeRequestCode = 2
 
 class CustomAdapter (
     private val habits: List<Habit>,
-    private val onClick: (Habit) -> Unit
+    private val onClick: (Habit, Int) -> Unit
 ): RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
-    class ViewHolder(containerView: View, val onClick: (Habit) -> Unit): RecyclerView.ViewHolder(containerView) {
+    class ViewHolder(containerView: View, val onClick: (Habit, Int) -> Unit): RecyclerView.ViewHolder(containerView) {
         private var currentHabit: Habit? = null
         private val habitName = itemView.findViewById<TextView>(R.id.habit_name);
         private val habitDescription = itemView.findViewById<TextView>(R.id.habit_description_value);
@@ -44,7 +46,11 @@ class CustomAdapter (
     override fun getItemCount() = habits.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(habits[position])
+        val item = habits[position]
+        holder.bind(item)
+        holder.itemView.setOnClickListener {
+            onClick(item, position)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -57,35 +63,61 @@ class ListActivity : AppCompatActivity() {
     var habits: MutableList<Habit> = emptyList<Habit>().toMutableList()
     var newHabit: Habit? = null
     lateinit var recyclerView: RecyclerView
-    val onCLick: (Habit) -> Unit = {
+    val onCLick: (Habit, Int) -> Unit = { habit: Habit, ind: Int ->
         val intent = Intent(applicationContext, AddActivity::class.java).apply {
-            putExtra(key, it)
+            putExtra(habitKey, habit)
+            putExtra(indexKey, ind)
         }
-        startActivity(intent)
+        startActivityForResult(intent, 2)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        newHabit = intent.getParcelableExtra(key)
+        newHabit = intent.getParcelableExtra(habitKey)
         recyclerView = findViewById(R.id.recycle_view)
         habits.add(Habit(
-        "Проёбывать дедлайны",
-        "Это просто пиздец",
-        1,
+        "Пример",
+        "ААААААА",
+        3,
         "каждый день",
-        HabitType.UNHEALTHY,
-        R.color.black))
+        HabitType.NEUTRAL,
+        R.color.green))
         recyclerView.adapter = CustomAdapter(habits, onCLick)
 
         findViewById<Button>(R.id.add_button).setOnClickListener {
-            startActivity(Intent(applicationContext, AddActivity::class.java))
+            startActivityForResult(
+                Intent(applicationContext, AddActivity::class.java),
+                addRequestCode
+            )
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data == null)
+            return
+        if (requestCode == addRequestCode) {
+            newHabit = data.getParcelableExtra(habitKey)
+            if (newHabit != null) {
+                habits.add(newHabit!!)
+                recyclerView.adapter = CustomAdapter(habits, onCLick)
+                recyclerView.invalidate()
+                recyclerView.requestLayout()
+            }
+        }
+        else {
+            val habit = data.getParcelableExtra<Habit>(habitKey)!!
+            val index = data.getIntExtra(indexKey, -1)
+            habits[index] = habit
+            recyclerView.adapter!!.notifyItemChanged(index)
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val hab = savedInstanceState.getParcelableArrayList<Habit>(key)
+        val hab = savedInstanceState.getParcelableArrayList<Habit>(habitKey)
         habits = hab ?: emptyList<Habit>().toMutableList()
         if (newHabit != null)
             habits.add(newHabit!!)
@@ -93,7 +125,7 @@ class ListActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        outState.putParcelableArrayList(key, ArrayList<Habit> (habits))
+        outState.putParcelableArrayList(habitKey, ArrayList<Habit> (habits))
     }
 }
 
